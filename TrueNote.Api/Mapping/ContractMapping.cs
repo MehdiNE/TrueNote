@@ -1,5 +1,6 @@
 ﻿using TrueNote.Application.Models;
 using TrueNote.Contracts.Requests;
+using TrueNote.Contracts.Responses;
 
 namespace TrueNote.Api.Mapping;
 
@@ -12,6 +13,24 @@ public static class ContractMapping
             Id = Guid.NewGuid(),
             Title = request.Title,
             Description = request.Description
+        };
+    }
+
+    public static NoteResponse MapToResponse(this Note note)
+    {
+        return new NoteResponse
+        {
+            Id = Guid.NewGuid(),
+            Title = note.Title,
+            Description = note.Description
+        };
+    }
+
+    public static NotesResponse MapToResponse(this IEnumerable<Note> notes)
+    {
+        return new NotesResponse
+        {
+            Items = notes.Select(MapToResponse)
         };
     }
 }

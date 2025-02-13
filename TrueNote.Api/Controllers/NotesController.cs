@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Reflection.Metadata.Ecma335;
 using TrueNote.Api.Mapping;
 using TrueNote.Application.Models;
 using TrueNote.Application.Repositories;
@@ -22,6 +23,30 @@ namespace TrueNote.Api.Controllers
             var note = request.MapToNote();
             await _noteRepository.CreateAsync(note);
             return Ok(note);
+        }
+
+        [HttpGet(ApiEndpoints.Notes.Get)]
+        public async Task<IActionResult> Get([FromRoute] Guid id)
+        {
+            var note = await _noteRepository.GetByIdAsync(id);
+            if (note is null)
+            {
+                return NotFound();
+            }
+
+            var response = note.MapToResponse();
+
+            return Ok(response);
+        }
+
+        [HttpGet(ApiEndpoints.Notes.GetAll)]
+        public async Task<IActionResult> GetAll()
+        {
+            var notes = await _noteRepository.GetAllAsync();
+
+            var notesResponse = notes.MapToResponse();
+
+            return Ok(notesResponse);
         }
     }
 }
