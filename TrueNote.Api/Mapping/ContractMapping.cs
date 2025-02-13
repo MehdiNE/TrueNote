@@ -15,6 +15,15 @@ public static class ContractMapping
             Description = request.Description
         };
     }
+    public static Note MapToNote(this UpdateNoteRequest request, Guid id)
+    {
+        return new Note
+        {
+            Id = id,
+            Title = request.Title,
+            Description = request.Description
+        };
+    }
 
     public static NoteResponse MapToResponse(this Note note)
     {
