@@ -29,7 +29,7 @@ public static class ContractMapping
     {
         return new NoteResponse
         {
-            Id = Guid.NewGuid(),
+            Id = note.Id,
             Title = note.Title,
             Description = note.Description
         };

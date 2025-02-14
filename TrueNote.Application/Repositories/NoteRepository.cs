@@ -1,44 +1,63 @@
-﻿using TrueNote.Application.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using TrueNote.Application.Database;
+using TrueNote.Application.Models;
 
 namespace TrueNote.Application.Repositories;
 
 public class NoteRepository : INoteRepository
 {
-    private readonly List<Note> _notes = [];
+    private readonly NotesContext _notesContext;
 
-    public Task<bool> CreateAsync(Note note)
+    public NoteRepository(NotesContext notesContext)
     {
-        _notes.Add(note);
-        return Task.FromResult(true);
+        _notesContext = notesContext;
     }
 
-    public Task<Note?> GetByIdAsync(Guid id)
+    public async Task<bool> CreateAsync(Note note)
     {
-        var note = _notes.SingleOrDefault(x => x.Id == id);
-        return Task.FromResult(note);
+        await _notesContext.Notes.AddAsync(note);
+        await _notesContext.SaveChangesAsync();
+        return true;
     }
 
-    public Task<IEnumerable<Note>> GetAllAsync()
+    public async Task<Note?> GetByIdAsync(Guid id)
     {
-        return Task.FromResult(_notes.AsEnumerable());
+        var note = await _notesContext.Notes.SingleOrDefaultAsync(x => x.Id == id);
+        return note;
     }
 
-    public Task<bool> UpdateAsync(Note note)
+    public async Task<IEnumerable<Note>> GetAllAsync()
     {
-        var noteIndex = _notes.FindIndex(x => x.Id == note.Id);
-        if (noteIndex == -1)
+        return await _notesContext.Notes.ToListAsync();
+    }
+
+    public async Task<bool> UpdateAsync(Note note)
+    {
+        var existingNote = await _notesContext.Notes.FindAsync(note.Id);
+        if (existingNote is null)
         {
-            return Task.FromResult(false);
+            return false;
         }
 
-        _notes[noteIndex] = note;
-        return Task.FromResult(true);
+        existingNote.Title = note.Title;
+        existingNote.Description = note.Description;
+
+        await _notesContext.SaveChangesAsync();
+        return true;
     }
 
-    public Task<bool> DeleteByIdAsync(Guid id)
+    public async Task<bool> DeleteByIdAsync(Guid id)
     {
-        var removedCount = _notes.RemoveAll(x => x.Id == id);
-        var noteRemoved = removedCount > 0;
-        return Task.FromResult(noteRemoved);
+        var existingNote = await _notesContext.Notes.FindAsync(id);
+        if (existingNote is null)
+        {
+            return false;
+        }
+
+        _notesContext.Notes.Remove(existingNote);
+
+        await _notesContext.SaveChangesAsync();
+
+        return true;
     }
 }
