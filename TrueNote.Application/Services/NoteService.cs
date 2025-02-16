@@ -1,4 +1,5 @@
-﻿using TrueNote.Application.Database;
+﻿using FluentValidation;
+using TrueNote.Application.Database;
 using TrueNote.Application.Models;
 using TrueNote.Application.Repositories;
 
@@ -7,15 +8,18 @@ namespace TrueNote.Application.Services;
 public class NoteService : INoteService
 {
     private readonly INoteRepository _noteRepository;
+    private readonly IValidator<Note> _noteValidator;
 
-    public NoteService(INoteRepository noteRepository)
+    public NoteService(INoteRepository noteRepository, IValidator<Note> noteValidator)
     {
         _noteRepository = noteRepository;
+        _noteValidator = noteValidator;
     }
 
-    public Task<bool> CreateAsync(Note note)
+    public async Task<bool> CreateAsync(Note note)
     {
-        return _noteRepository.CreateAsync(note);
+        await _noteValidator.ValidateAndThrowAsync(note);
+        return await _noteRepository.CreateAsync(note);
     }
 
     public Task<bool> DeleteByIdAsync(Guid id)
@@ -35,6 +39,7 @@ public class NoteService : INoteService
 
     public async Task<Note?> UpdateAsync(Note note)
     {
+        await _noteValidator.ValidateAndThrowAsync(note);
         var isUpdated = await _noteRepository.UpdateAsync(note);
         if (!isUpdated)
         {
@@ -42,7 +47,5 @@ public class NoteService : INoteService
         }
 
         return note;
-
-
     }
 }

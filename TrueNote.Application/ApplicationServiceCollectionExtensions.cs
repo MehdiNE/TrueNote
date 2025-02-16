@@ -1,5 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
 using TrueNote.Application.Database;
+using TrueNote.Application.Models;
 using TrueNote.Application.Repositories;
 using TrueNote.Application.Services;
 
@@ -12,6 +14,7 @@ public static class ApplicationServiceCollectionExtensions
         services.AddScoped<INoteRepository, NoteRepository>();
         services.AddScoped<INoteService, NoteService>();
         services.AddDbContext<NotesContext>();
+        services.AddValidatorsFromAssemblyContaining<Note>();
         return services;
     }
 }

@@ -1,3 +1,4 @@
+using TrueNote.Api.Mapping;
 using TrueNote.Application;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,7 +23,7 @@ app.UseHttpsRedirection();
 app.UseSwaggerUI(options => options.SwaggerEndpoint("/openapi/v1.json", "True note"));
 app.UseAuthorization();
 
-
+app.UseMiddleware<ValidationMappingMiddleware>();
 app.MapControllers();
 
 app.Run();
