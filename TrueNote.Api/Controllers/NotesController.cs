@@ -3,6 +3,7 @@ using System.Reflection.Metadata.Ecma335;
 using TrueNote.Api.Mapping;
 using TrueNote.Application.Models;
 using TrueNote.Application.Repositories;
+using TrueNote.Application.Services;
 using TrueNote.Contracts.Requests;
 
 namespace TrueNote.Api.Controllers
@@ -10,25 +11,25 @@ namespace TrueNote.Api.Controllers
     [ApiController]
     public class NotesController : ControllerBase
     {
-        private readonly INoteRepository _noteRepository;
+        private readonly INoteService _noteService;
 
-        public NotesController(INoteRepository noteRepository)
+        public NotesController(INoteService noteService)
         {
-            _noteRepository = noteRepository;
+            _noteService = noteService;
         }
 
         [HttpPost(ApiEndpoints.Notes.Create)]
         public async Task<IActionResult> Create([FromBody] CreateNoteRequest request)
         {
             var note = request.MapToNote();
-            await _noteRepository.CreateAsync(note);
+            await _noteService.CreateAsync(note);
             return CreatedAtAction(nameof(Get), new { id = note.Id }, note);
         }
 
         [HttpGet(ApiEndpoints.Notes.Get)]
         public async Task<IActionResult> Get([FromRoute] Guid id)
         {
-            var note = await _noteRepository.GetByIdAsync(id);
+            var note = await _noteService.GetByIdAsync(id);
             if (note is null)
             {
                 return NotFound();
@@ -42,7 +43,7 @@ namespace TrueNote.Api.Controllers
         [HttpGet(ApiEndpoints.Notes.GetAll)]
         public async Task<IActionResult> GetAll()
         {
-            var notes = await _noteRepository.GetAllAsync();
+            var notes = await _noteService.GetAllAsync();
 
             var notesResponse = notes.MapToResponse();
 
@@ -54,8 +55,8 @@ namespace TrueNote.Api.Controllers
         UpdateNoteRequest request)
         {
             var note = request.MapToNote(id);
-            var updated = await _noteRepository.UpdateAsync(note);
-            if (!updated)
+            var updatedNote = await _noteService.UpdateAsync(note);
+            if (updatedNote is null)
             {
                 return NotFound();
             }
@@ -66,7 +67,7 @@ namespace TrueNote.Api.Controllers
         [HttpDelete(ApiEndpoints.Notes.Delete)]
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
-            var deleted = await _noteRepository.DeleteByIdAsync(id);
+            var deleted = await _noteService.DeleteByIdAsync(id);
             if (!deleted)
             {
                 return NotFound();

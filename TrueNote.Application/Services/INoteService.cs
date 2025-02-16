@@ -1,8 +1,8 @@
 ﻿using TrueNote.Application.Models;
 
-namespace TrueNote.Application.Repositories;
+namespace TrueNote.Application.Services;
 
-public interface INoteRepository
+public interface INoteService
 {
     Task<bool> CreateAsync(Note note);
 
@@ -10,9 +10,7 @@ public interface INoteRepository
 
     Task<IEnumerable<Note>> GetAllAsync();
 
-    Task<bool> UpdateAsync(Note note);
+    Task<Note?> UpdateAsync(Note note);
 
     Task<bool> DeleteByIdAsync(Guid id);
-
-    //Task<bool> ExistsByIdAsync(Guid id);
 }

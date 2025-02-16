@@ -60,4 +60,19 @@ public class NoteRepository : INoteRepository
 
         return true;
     }
+
+    //public async Task<bool> ExistsByIdAsync(Guid id)
+    //{
+    //    var existingNote = await _notesContext.Notes.FindAsync(id);
+    //    if (existingNote is null)
+    //    {
+    //        return false;
+    //    }
+
+    //    _notesContext.Notes.Remove(existingNote);
+
+    //    await _notesContext.SaveChangesAsync();
+
+    //    return true;
+    //}
 }
