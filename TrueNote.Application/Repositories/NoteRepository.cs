@@ -13,27 +13,27 @@ public class NoteRepository : INoteRepository
         _notesContext = notesContext;
     }
 
-    public async Task<bool> CreateAsync(Note note)
+    public async Task<bool> CreateAsync(Note note, CancellationToken token = default)
     {
-        await _notesContext.Notes.AddAsync(note);
-        await _notesContext.SaveChangesAsync();
+        await _notesContext.Notes.AddAsync(note, token);
+        await _notesContext.SaveChangesAsync(token);
         return true;
     }
 
-    public async Task<Note?> GetByIdAsync(Guid id)
+    public async Task<Note?> GetByIdAsync(Guid id, CancellationToken token = default)
     {
-        var note = await _notesContext.Notes.SingleOrDefaultAsync(x => x.Id == id);
+        var note = await _notesContext.Notes.SingleOrDefaultAsync(x => x.Id == id, token);
         return note;
     }
 
-    public async Task<IEnumerable<Note>> GetAllAsync()
+    public async Task<IEnumerable<Note>> GetAllAsync(CancellationToken token = default)
     {
-        return await _notesContext.Notes.ToListAsync();
+        return await _notesContext.Notes.ToListAsync(token);
     }
 
-    public async Task<bool> UpdateAsync(Note note)
+    public async Task<bool> UpdateAsync(Note note, CancellationToken token = default)
     {
-        var existingNote = await _notesContext.Notes.FindAsync(note.Id);
+        var existingNote = await _notesContext.Notes.FindAsync(note.Id, token);
         if (existingNote is null)
         {
             return false;
@@ -42,13 +42,13 @@ public class NoteRepository : INoteRepository
         existingNote.Title = note.Title;
         existingNote.Description = note.Description;
 
-        await _notesContext.SaveChangesAsync();
+        await _notesContext.SaveChangesAsync(token);
         return true;
     }
 
-    public async Task<bool> DeleteByIdAsync(Guid id)
+    public async Task<bool> DeleteByIdAsync(Guid id, CancellationToken token = default)
     {
-        var existingNote = await _notesContext.Notes.FindAsync(id);
+        var existingNote = await _notesContext.Notes.FindAsync(id, token);
         if (existingNote is null)
         {
             return false;
@@ -56,7 +56,7 @@ public class NoteRepository : INoteRepository
 
         _notesContext.Notes.Remove(existingNote);
 
-        await _notesContext.SaveChangesAsync();
+        await _notesContext.SaveChangesAsync(token);
 
         return true;
     }

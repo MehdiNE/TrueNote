@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using TrueNote.Application.Database;
 using TrueNote.Application.Models;
 using TrueNote.Application.Repositories;
 
@@ -16,31 +15,31 @@ public class NoteService : INoteService
         _noteValidator = noteValidator;
     }
 
-    public async Task<bool> CreateAsync(Note note)
+    public async Task<bool> CreateAsync(Note note, CancellationToken token)
     {
-        await _noteValidator.ValidateAndThrowAsync(note);
-        return await _noteRepository.CreateAsync(note);
+        await _noteValidator.ValidateAndThrowAsync(note, cancellationToken: token);
+        return await _noteRepository.CreateAsync(note, token);
     }
 
-    public Task<bool> DeleteByIdAsync(Guid id)
+    public Task<bool> DeleteByIdAsync(Guid id, CancellationToken token)
     {
-        return _noteRepository.DeleteByIdAsync(id);
+        return _noteRepository.DeleteByIdAsync(id, token);
     }
 
-    public Task<IEnumerable<Note>> GetAllAsync()
+    public Task<IEnumerable<Note>> GetAllAsync(CancellationToken token)
     {
-        return _noteRepository.GetAllAsync();
+        return _noteRepository.GetAllAsync(token);
     }
 
-    public Task<Note?> GetByIdAsync(Guid id)
+    public Task<Note?> GetByIdAsync(Guid id, CancellationToken token)
     {
-        return _noteRepository.GetByIdAsync(id);
+        return _noteRepository.GetByIdAsync(id, token);
     }
 
-    public async Task<Note?> UpdateAsync(Note note)
+    public async Task<Note?> UpdateAsync(Note note, CancellationToken token)
     {
-        await _noteValidator.ValidateAndThrowAsync(note);
-        var isUpdated = await _noteRepository.UpdateAsync(note);
+        await _noteValidator.ValidateAndThrowAsync(note, cancellationToken: token);
+        var isUpdated = await _noteRepository.UpdateAsync(note, token);
         if (!isUpdated)
         {
             return null;
