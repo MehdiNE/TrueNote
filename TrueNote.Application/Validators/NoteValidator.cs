@@ -13,5 +13,9 @@ public class NoteValidator : AbstractValidator<Note>
 
         RuleFor(x => x.Description)
             .NotEmpty();
+
+        RuleFor(x => x.UserId)
+            .NotEmpty()
+            .NotNull();
     }
 }

@@ -21,25 +21,25 @@ public class NoteService : INoteService
         return await _noteRepository.CreateAsync(note, token);
     }
 
-    public Task<bool> DeleteByIdAsync(Guid id, CancellationToken token)
+    public Task<bool> DeleteByIdAsync(Guid id, Guid userId, CancellationToken token)
     {
-        return _noteRepository.DeleteByIdAsync(id, token);
+        return _noteRepository.DeleteByIdAsync(id, userId, token);
     }
 
-    public Task<IEnumerable<Note>> GetAllAsync(CancellationToken token)
+    public Task<IEnumerable<Note>> GetAllAsync(Guid userId, CancellationToken token)
     {
-        return _noteRepository.GetAllAsync(token);
+        return _noteRepository.GetAllAsync(userId, token);
     }
 
-    public Task<Note?> GetByIdAsync(Guid id, CancellationToken token)
+    public Task<Note?> GetByIdAsync(Guid id, Guid userId, CancellationToken token)
     {
-        return _noteRepository.GetByIdAsync(id, token);
+        return _noteRepository.GetByIdAsync(id, userId, token);
     }
 
-    public async Task<Note?> UpdateAsync(Note note, CancellationToken token)
+    public async Task<Note?> UpdateAsync(Note note, Guid userId, CancellationToken token)
     {
         await _noteValidator.ValidateAndThrowAsync(note, cancellationToken: token);
-        var isUpdated = await _noteRepository.UpdateAsync(note, token);
+        var isUpdated = await _noteRepository.UpdateAsync(note, userId, token);
         if (!isUpdated)
         {
             return null;

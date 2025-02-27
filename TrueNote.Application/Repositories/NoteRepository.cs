@@ -20,20 +20,20 @@ public class NoteRepository : INoteRepository
         return true;
     }
 
-    public async Task<Note?> GetByIdAsync(Guid id, CancellationToken token = default)
+    public async Task<Note?> GetByIdAsync(Guid id, Guid userId, CancellationToken token = default)
     {
-        var note = await _notesContext.Notes.SingleOrDefaultAsync(x => x.Id == id, token);
+        var note = await _notesContext.Notes.SingleOrDefaultAsync(x => x.Id == id && x.UserId == userId, token);
         return note;
     }
 
-    public async Task<IEnumerable<Note>> GetAllAsync(CancellationToken token = default)
+    public async Task<IEnumerable<Note>> GetAllAsync(Guid userId, CancellationToken token = default)
     {
-        return await _notesContext.Notes.ToListAsync(token);
+        return await _notesContext.Notes.Where(x => x.UserId == userId).ToListAsync(token);
     }
 
-    public async Task<bool> UpdateAsync(Note note, CancellationToken token = default)
+    public async Task<bool> UpdateAsync(Note note, Guid userId, CancellationToken token = default)
     {
-        var existingNote = await _notesContext.Notes.FindAsync(note.Id, token);
+        var existingNote = await _notesContext.Notes.SingleOrDefaultAsync(x => x.Id == note.Id && x.UserId == userId, token);
         if (existingNote is null)
         {
             return false;
@@ -46,9 +46,9 @@ public class NoteRepository : INoteRepository
         return true;
     }
 
-    public async Task<bool> DeleteByIdAsync(Guid id, CancellationToken token = default)
+    public async Task<bool> DeleteByIdAsync(Guid id, Guid userId, CancellationToken token = default)
     {
-        var existingNote = await _notesContext.Notes.FindAsync(id, token);
+        var existingNote = await _notesContext.Notes.SingleOrDefaultAsync(x => x.Id == id && x.UserId == userId, token);
         if (existingNote is null)
         {
             return false;
@@ -60,19 +60,4 @@ public class NoteRepository : INoteRepository
 
         return true;
     }
-
-    //public async Task<bool> ExistsByIdAsync(Guid id)
-    //{
-    //    var existingNote = await _notesContext.Notes.FindAsync(id);
-    //    if (existingNote is null)
-    //    {
-    //        return false;
-    //    }
-
-    //    _notesContext.Notes.Remove(existingNote);
-
-    //    await _notesContext.SaveChangesAsync();
-
-    //    return true;
-    //}
 }

@@ -6,22 +6,24 @@ namespace TrueNote.Api.Mapping;
 
 public static class ContractMapping
 {
-    public static Note MapToNote(this CreateNoteRequest request)
+    public static Note MapToNote(this CreateNoteRequest request, Guid userId)
     {
         return new Note
         {
             Id = Guid.NewGuid(),
             Title = request.Title,
-            Description = request.Description
+            Description = request.Description,
+            UserId = userId
         };
     }
-    public static Note MapToNote(this UpdateNoteRequest request, Guid id)
+    public static Note MapToNote(this UpdateNoteRequest request, Guid id, Guid userId)
     {
         return new Note
         {
             Id = id,
             Title = request.Title,
-            Description = request.Description
+            Description = request.Description,
+            UserId = userId
         };
     }
 

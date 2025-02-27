@@ -15,6 +15,8 @@ public static class ApplicationServiceCollectionExtensions
         services.AddScoped<INoteService, NoteService>();
         services.AddDbContext<NotesContext>();
         services.AddValidatorsFromAssemblyContaining<Note>();
+        services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IAuthRepository, AuthRepository>();
         return services;
     }
 }
